@@ -9,6 +9,14 @@ class MyApp extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return MaterialApp(
+      title:  'To-Do App',
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/home',
+      routes: {
+        '/home': (context) => HomePage(),
+
+      },
+
 
     );
   }
