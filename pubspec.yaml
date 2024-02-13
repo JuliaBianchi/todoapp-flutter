@@ -39,6 +39,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   ionicons: ^0.2.2
   font_awesome_flutter: ^10.7.0
+  sqflite: ^2.3.2
+  path: ^1.8.3
 
 
 dev_dependencies:
@@ -79,10 +81,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Montserrat
-      fonts:
-        - asset: lib/fonts/Montserrat-Regular.ttf
+#  fonts:
+#    - family: Montserrat
+#      fonts:
+#        - asset: lib/fonts/Montserrat-Regular.ttf
 
     #
   # For details regarding fonts from package dependencies,
