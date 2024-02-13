@@ -1,9 +1,9 @@
 class TaskModel{
   final int id;
   final String description;
-  final DateTime created_at;
-  final DateTime deleted_at;
-  final DateTime updated_at;
+  final String created_at;
+  final String deleted_at;
+  final String updated_at;
   final bool isCompleted;
 
 
