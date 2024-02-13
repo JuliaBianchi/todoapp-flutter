@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/Database/DbUtil.dart';
 import 'package:todoapp/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  DbUtil.database();
+
 }
 
 class MyApp extends StatelessWidget {
