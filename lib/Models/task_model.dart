@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+part 'task_model.g.dart';
+
+
+@JsonSerializable()
 class TaskModel{
   final int id;
   final String description;
@@ -15,4 +20,8 @@ class TaskModel{
     required this.deleted_at,
     required this.isCompleted,
   });
+
+  factory TaskModel.fromJson(Map<String, dynamic> json) => _$TaskModelFromJson(json);
+
+  Map<String, dynamic> toJson() =>  _$TaskModelToJson(this);
 }

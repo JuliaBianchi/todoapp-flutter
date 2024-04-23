@@ -1,5 +1,7 @@
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
+import 'package:todoapp/Models/task_model.dart';
+import 'package:sqflite/sqflite.dart' as sql;
 
 class DbUtil {
   static const int version = 1; //-> mudar pra PROXIMA
@@ -16,6 +18,21 @@ class DbUtil {
       version: version,
     );
   }
+
+  static Future<void> insert(String table, Map<String, Object> data) async {
+    final db = await DbUtil.database();
+    await db.insert(
+      table,
+      data,
+    );
+  }
+
+  static Future<List<Map<String, dynamic>>> getData(String table) async {
+    final db = await DbUtil.database();
+    return db.query(table);
+  }
+
+
 
 
  // MÉTODO GET PARA TRAZER OS DADOS
