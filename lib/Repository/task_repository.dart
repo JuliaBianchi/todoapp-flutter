@@ -1,25 +1,23 @@
-import 'dart:convert';
+import 'dart:collection';
+import 'package:flutter/material.dart';
+import '../models/task_model.dart';
 
-import 'package:todoapp/Database/db_util.dart';
+class TaskRepository extends ChangeNotifier {
+  List<TaskModel> _list = [];
 
-import '../Models/task_model.dart';
+  UnmodifiableListView<TaskModel> get list => UnmodifiableListView(_list);
 
-abstract class ITaskRepository {
-  Future<List<TaskModel>> getTasks();
-}
-
-class TaskRepository implements ITaskRepository {
-  List<TaskModel> tasks = [];
-
-  @override
-  Future<List<TaskModel>> getTasks() async {
-    final dataList = await DbUtil.getData('tasks');
-
-    tasks = dataList.map((data) => TaskModel.fromJson(data)).toList();
-
-    return tasks;
+  addTask(TaskModel task) {
+    _list.add(task);
+    notifyListeners();
   }
 
+  updateTask(TaskModel task) {
+    int index = _list.indexWhere((p) => p.id == task.id);
 
-
+    if (index >= 0) {
+      _list[index] = task;
+      notifyListeners();
+    }
+  }
 }
