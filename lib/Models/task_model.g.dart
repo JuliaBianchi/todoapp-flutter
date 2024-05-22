@@ -10,7 +10,7 @@ TaskModel _$TaskModelFromJson(Map<String, dynamic> json) => TaskModel(
       id: (json['id'] as num?)?.toInt(),
       description: json['description'] as String?,
       category: (json['category'] as num?)?.toInt(),
-      created_at: json['created_at'] as String?,
+      created_at: json['created_at'] as DateTime?,
       updated_at: json['updated_at'] as String?,
       deleted_at: json['deleted_at'] as String?,
       isCompleted: json['isCompleted'] as bool?,

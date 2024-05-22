@@ -1,7 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/pages/all_tasks_page.dart';
+import 'package:todoapp/pages/birthday_page.dart';
+import 'package:todoapp/pages/study_tasks_page.dart';
+import 'package:todoapp/pages/work_tasks_pege.dart';
 import 'package:todoapp/repository/task_repository.dart';
 import 'package:todoapp/models/task_model.dart';
 import '../components/error_dialog_component.dart';
@@ -15,8 +18,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController idController = TextEditingController();
@@ -34,13 +36,13 @@ class _HomePageState extends State<HomePage>
     descriptionController.clear();
   }
 
-  Future<dynamic> showTasksDialog(BuildContext context, int index, [TaskModel? task]) async {
+  Future<dynamic> showTasksDialog(BuildContext context, [TaskModel? task]) async {
 
     await showDialog(
         context: context,
         builder: (context) {
           return Dialog(
-            backgroundColor: const Color(0xFFEEEDEC),
+            backgroundColor: Colors.blue.shade50,
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
             child: Form(
               key: _formKey,
@@ -50,56 +52,58 @@ class _HomePageState extends State<HomePage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 15),
-                        child: Text(
-                          'Tarefa',
-                          style: TextStyle(fontSize: 20),
+                       Padding(
+                        padding: EdgeInsets.only(top: 15, left: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Tarefa',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue.shade800),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        width: 320,
-                        height: 125,
                         decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFF9EA5AD)),
+                          border: Border.all(color: Colors.blue.shade200),
                           borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.white
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              width: 280,
+                              width: 250,
                               height: 120,
                               child: TextFormField(
                                 controller: descriptionController,
                                 decoration: InputDecoration(
                                   hintText: 'Descreva a tarefa...',
-                                  hintStyle: TextStyle(color: Colors.grey.shade600),
+                                  hintStyle: TextStyle(color: Colors.grey.shade500),
                                   border: InputBorder.none,
                                   suffixIconConstraints: const BoxConstraints(maxWidth: 24, maxHeight: 24),
                                   contentPadding: const EdgeInsets.only(left: 8.0, right: 15.0, top: 15.0, bottom: 5.0),
                                 ),
                                 maxLines: 5,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 14,
-                                  color: Color(0xFF454C52),
+                                  color: Colors.grey.shade900,
                                 ),
                                 cursorColor: const Color(0xFF454C52),
-                                validator: (value) =>
-                                value == ''
+                                validator: (value) => value == ''
                                     ? 'Ops, a tarefa não pode ser vazia.'
                                     : null,
                               ),
                             ),
-                            Padding(padding: const EdgeInsets.only(top: 15),
-                                child: SvgPicture.asset('lib/assets/pencil-square.svg')),
+                            Padding(padding: const EdgeInsets.only(top: 15), child: SvgPicture.asset('lib/assets/pencil-square.svg', color: Colors.blue.shade500,)),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                         child: Row(
@@ -111,7 +115,7 @@ class _HomePageState extends State<HomePage>
                                 onPressed: () {
                                   submitForm();
                                 },
-                                style: ButtonStyle(backgroundColor: MaterialStateProperty.all(const Color(0xFF5C0090)),),
+                                style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue.shade500),),
                                 child: const Text(
                                   'Salvar',
                                   style: TextStyle(
@@ -131,7 +135,7 @@ class _HomePageState extends State<HomePage>
                                   clearFields();
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(const Color(0xFF5C0090)),
+                                  backgroundColor: MaterialStateProperty.all(Colors.blue.shade500),
                                 ),
                                 child: const Text(
                                   'Cancelar',
@@ -175,8 +179,8 @@ class _HomePageState extends State<HomePage>
     TaskModel task = TaskModel(
         id: id,
         description: descriptionController.text,
-        category: _tabController.index+1,
-        created_at: createdAt.toString(),
+        category: _tabController.index + 1,
+        created_at: createdAt,
         updated_at: null,
         deleted_at: null,
         isCompleted: false
@@ -184,17 +188,12 @@ class _HomePageState extends State<HomePage>
 
     try {
       Provider.of<TaskRepository>(context, listen: false).addTask(task);
-      log('Add');
-      log('${task.id}');
-      log('${task.category}');
-      log('${task.description}');
-      log('${task.created_at}');
 
     }catch(e){
       log('Erro $e');
     }
 
-    Navigator.popAndPushNamed(context, '/home-page');
+    Navigator.pop(context);
 
     clearFields();
   }
@@ -243,53 +242,60 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    tasks = Provider.of<TaskRepository>(context).list;
+    tasks = Provider.of<TaskRepository>(context).allTasks;
 
     return DefaultTabController(
       initialIndex: 1,
       length: 4,
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(210, 210, 255, 65.0),
+        backgroundColor: Colors.blue.shade50,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 220,
-              child: GridPaper(
-                interval: 200,
-                color: Colors.white12,
-                child: SvgPicture.asset('lib/assets/arrow.svg', alignment: Alignment.center,),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Anotações', style: TextStyle(color: Colors.blue.shade800, fontWeight: FontWeight.bold, fontSize: 32)),
+                ],
               ),
             ),
-            TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              padding: const EdgeInsets.all(10),
-              labelPadding: const EdgeInsets.only(left: 25, right: 25, top: 10),
-              dividerColor: Colors.transparent,
-              indicatorSize: TabBarIndicatorSize.label,
-              splashBorderRadius: BorderRadius.circular(50.0),
-              labelColor: const Color.fromRGBO(120, 28, 171, 100),
-              indicatorColor: Colors.purple,
-              unselectedLabelColor: Colors.black54,
-              tabs: const [
-                Tab(text: 'Todas', icon: Icon(Icons.home),),
-                Tab(text: 'Estudo', icon: Icon(Icons.library_books)),
-                Tab(text: 'Trabalho', icon: Icon(Icons.laptop)),
-                Tab(text: 'Aniversários', icon: Icon(Icons.cake)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TabBar(
+                  padding: const EdgeInsets.only(left: 25 ),
+                  controller: _tabController,
+                  isScrollable: true,
+                  indicator: BoxDecoration(borderRadius: BorderRadius.circular(30.0), color: Colors.blue.shade500),
+                  tabAlignment: TabAlignment.start,
+                  dividerColor: Colors.transparent,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  splashBorderRadius: BorderRadius.circular(30.0),
+                  labelColor: const Color(0xFFe9ebff),
+                  unselectedLabelColor: Colors.blue.shade500,
+                  indicatorPadding: EdgeInsets.all(5.0),
+                  labelStyle: TextStyle(fontWeight: FontWeight.w600),
+                  tabs:  const [
+                    Tab(text: 'Todas'),
+                    Tab(text: 'Estudo'),
+                    Tab(text: 'Trabalho'),
+                    Tab(text: 'Aniversários'),
+                  ],
+                ),
               ],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  Container(child: const Text('Geral')),
-                  Container(child: const Text('Estudos')),
-                  Container(child: const Text('Trabalho')),
-                  Container(child: const Text('Aniversário')),
+                  Container(child: AllTasksPage()),
+                  Container(child: StudyTasksPage()),
+                  Container(child: WorkTasksPage()),
+                  Container(child: BirthdayPage()),
 
                 ],),
             ),
@@ -298,12 +304,10 @@ class _HomePageState extends State<HomePage>
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0xFF5C0090),
-          tooltip: 'Adicionar nota',
+          backgroundColor: Colors.blue.shade500,
+          tooltip: 'Adicionar',
           onPressed: () {
-            final index = _tabController.index + 1;
-
-            showTasksDialog(context, index);
+            showTasksDialog(context);
           },
           shape: const CircleBorder(),
           child: const Icon(Icons.add, color: Colors.white),

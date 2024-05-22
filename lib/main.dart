@@ -11,8 +11,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   WidgetsFlutterBinding.ensureInitialized();
   DbUtil.database();
-
-
+  
 }
 
 class MyApp extends StatelessWidget {
@@ -25,11 +24,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/home-page',
       routes: {
-        '/home-page' : (context) => HomePage(),
+        '/home-page' : (context) => const HomePage(),
       },
       theme: ThemeData(
-        textTheme: GoogleFonts.nanumMyeongjoTextTheme(),
+        textTheme: GoogleFonts.poppinsTextTheme(),
       ),
+
     );
   }
 }

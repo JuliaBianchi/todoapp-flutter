@@ -7,7 +7,7 @@ class TaskModel{
   final int? id;
   final String? description;
   final int? category;
-  final String? created_at;
+  final DateTime? created_at;
   final String? deleted_at;
   final String? updated_at;
   final bool? isCompleted;
