@@ -1,9 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:todoapp/repository/task_repository.dart';
 import '../models/task_model.dart';
+import '../repository/tasks_repository.dart';
 
 class ListViewComponent extends StatelessWidget {
 
@@ -94,7 +93,6 @@ class ListViewComponent extends StatelessWidget {
                     key: ValueKey<TaskModel>(task),
                     onDismissed: (DismissDirection direction) {
                       if (direction == DismissDirection.endToStart) {
-                        Provider.of<TaskRepository>(context, listen: false).removeTask(task);
 
                         // passar a hora no campo deleted-at
                         log('remover');
@@ -115,9 +113,7 @@ class ListViewComponent extends StatelessWidget {
                             ),
                           ],
                           color: Colors.white,
-                          borderRadius: BorderRadius.only(topLeft: Radius
-                              .circular(30.0),
-                              bottomRight: Radius.circular(30.0))),
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0), bottomRight: Radius.circular(30.0))),
                       child: GestureDetector(
                         child: Card(
                           elevation: 0,
@@ -144,19 +140,19 @@ class ListViewComponent extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  if (task.created_at != null)
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          DateFormat.MMMMEEEEd().format(task.created_at!),
-                                          style: TextStyle(
-                                              color: Colors.grey.shade600,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
+                                  // if (task.created_at != null)
+                                  //   Row(
+                                  //     mainAxisAlignment: MainAxisAlignment.end,
+                                  //     children: [
+                                  //       Text(
+                                  //         DateFormat.MMMMEEEEd().format(task.created_at!),
+                                  //         style: TextStyle(
+                                  //             color: Colors.grey.shade600,
+                                  //             fontWeight: FontWeight.w500,
+                                  //             fontSize: 12),
+                                  //       ),
+                                  //     ],
+                                  //   ),
                                 ],
                               ),
                             ),

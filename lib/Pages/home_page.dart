@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/pages/all_tasks_page.dart';
 import 'package:todoapp/pages/birthday_page.dart';
 import 'package:todoapp/pages/study_tasks_page.dart';
 import 'package:todoapp/pages/work_tasks_pege.dart';
-import 'package:todoapp/repository/task_repository.dart';
+import 'package:todoapp/repository/tasks_repository.dart';
 import 'package:todoapp/models/task_model.dart';
+import '../Database/db_util.dart';
 import '../components/error_dialog_component.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -37,12 +39,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Future<dynamic> showTasksDialog(BuildContext context, [TaskModel? task]) async {
-
     await showDialog(
         context: context,
         builder: (context) {
           return Dialog(
-            backgroundColor: Colors.blue.shade50,
+            backgroundColor: Colors.white,
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
             child: Form(
               key: _formKey,
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       const SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue.shade200),
+                          border: Border.all(color: Colors.white),
                           borderRadius: BorderRadius.circular(8.0),
                           color: Colors.white
                         ),
@@ -113,6 +114,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                               width: 125,
                               child: ElevatedButton(
                                 onPressed: () {
+
                                   submitForm();
                                 },
                                 style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue.shade500),),
@@ -135,7 +137,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                   clearFields();
                                 },
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.blue.shade500),
+                                  backgroundColor: WidgetStateProperty.all(Colors.blue.shade500),
                                 ),
                                 child: const Text(
                                   'Cancelar',
@@ -167,35 +169,44 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       return;
     }
 
-    int? id = tasks.length;
-    DateTime createdAt = DateTime.now();
+    final db = await DbUtil.database();
 
-    if(tasks.isEmpty){
+
+    int? id = int.tryParse(idController.text);
+    String? createdAt = DateTime.now().toString();
+
+    List<Map<String?, dynamic>> result = await db.rawQuery('SELECT id FROM tasks');
+
+    if (result.isEmpty) {
       id = 1;
-    }else{
-      id = (id + 1);
+    } else {
+      var table = await db.rawQuery('SELECT MAX(id)+1 as id FROM tasks');
+      var idInsert = await table.first['id'].toString();
+      id = int.tryParse(idInsert);
     }
 
-    TaskModel task = TaskModel(
-        id: id,
-        description: descriptionController.text,
-        category: _tabController.index + 1,
-        created_at: createdAt,
-        updated_at: null,
-        deleted_at: null,
-        isCompleted: false
-    );
 
-    try {
-      Provider.of<TaskRepository>(context, listen: false).addTask(task);
 
-    }catch(e){
-      log('Erro $e');
-    }
+      TaskModel task = TaskModel(
+          id: id,
+          description: descriptionController.text,
+          category: _tabController.index + 1,
+          created_at: createdAt,
+      );
 
-    Navigator.pop(context);
+      try {
+        Provider.of<TasksRepository>(context, listen: false).insertTask(task).then((_) {
+          _showScaffold('Tarefa criada com sucesso!');
+          Provider.of<TasksRepository>(context, listen: false).addTask(task);
 
-    clearFields();
+          clearFields();
+
+          Navigator.pop(context);
+        });
+      }catch(e){
+        _showErrorDialog('Ops, ocorreu um erro!', '${e.toString()}');
+      }
+
   }
 
   void _showScaffold(String msg) {
@@ -222,9 +233,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Future _showErrorDialog(String msg, String title) {
-    return showDialog(context: context,
-        builder: (ctx) => DisplayDialog(title: title, msg: msg));
+  Future _showErrorDialog(String title, String msg) {
+    return showDialog(context: context, builder: (ctx) => DisplayDialog(title: title, msg: msg));
   }
 
   @override
@@ -242,8 +252,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    tasks = Provider.of<TaskRepository>(context).allTasks;
-
     return DefaultTabController(
       initialIndex: 1,
       length: 4,
