@@ -115,6 +115,7 @@ class AllTasksPage extends StatelessWidget {
                                       topLeft: Radius.circular(30.0),
                                       bottomRight: Radius.circular(30.0))),
                               child: GestureDetector(
+
                                 child: Card(
                                   elevation: 0,
                                   color: Colors.transparent,

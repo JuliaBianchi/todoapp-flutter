@@ -144,20 +144,18 @@ class BirthdayPage extends StatelessWidget {
                                             ),
                                           ],
                                         ),
-                                        // if (task.created_at != null)
-                                        //   Row(
-                                        //     mainAxisAlignment:
-                                        //     MainAxisAlignment.end,
-                                        //     children: [
-                                        //       Text(
-                                        //         DateFormat.MMMMEEEEd().format(task.created_at!),
-                                        //         style: TextStyle(
-                                        //             color: Colors.grey.shade600,
-                                        //             fontWeight: FontWeight.w500,
-                                        //             fontSize: 12),
-                                        //       ),
-                                        //     ],
-                                        //   ),
+                                        if (task.created_at != null)
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(DateFormat.yMMMMEEEEd('pt-br').format(DateTime.parse(task.created_at!)),
+                                                style: TextStyle(
+                                                    color: Colors.grey.shade600,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
                                       ],
                                     ),
                                   ),
